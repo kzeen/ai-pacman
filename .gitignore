@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environment directories
+env/
+venv/
+pacman_env/
+
+# Conda environment files (if created locally)
+*.conda
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+*.tmp
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Other sensitive or local configuration files
+.env
+
+
+# PDFs
+*.pdf
