@@ -93,7 +93,7 @@ def depthFirstSearch(problem: SearchProblem):
     visited = set()
 
     startState = problem.getStartState()
-    frontier.push((startState, [])) # Push to stack a tuple of (state, path to get there)
+    frontier.push((startState, [])) # Push to stack a tuple of (state, path_to_get_there)
 
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
@@ -113,7 +113,29 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Queue
+
+    frontier = Queue()
+    visited = set()
+
+    startState = problem.getStartState()
+    frontier.push((startState, [])) # (state, path_to_get_there)
+
+    while not frontier.isEmpty():
+        currState, currPath = frontier.pop()
+
+        if problem.isGoalState(currState):
+            return currPath
+        
+        if currState not in visited:
+            visited.add(currState)
+
+            for successor, action, stepCost in problem.getSuccessors(currState):
+                if successor not in visited:
+                    newPath = currPath + [action]
+                    frontier.push((successor, newPath))
+
+    return []
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
