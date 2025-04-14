@@ -493,7 +493,22 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    # Goal state
+    if foodGrid.count() == 0:
+        return 0
+    
+    foodPositions = foodGrid.asList()
+
+    # return max(manhattanDistance(position, foodPosition) for foodPosition in foodPositions)
+
+    # We get the true shortest-path distance to each food dot and return the max of these distances
+    # This heuristic is more informed and accurate leading to less node expansions
+    maxDistance = 0
+    for foodPosition in foodPositions:
+        distance = mazeDistance(position, foodPosition, problem.startingGameState)
+        if distance > maxDistance:
+            maxDistance = distance
+    return maxDistance
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
