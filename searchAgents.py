@@ -283,15 +283,22 @@ class CornersProblem(search.SearchProblem):
         """
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
+
+        # Corners
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1,1), (1,top), (right, 1), (right, top))
+
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
+
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        # Indicates which corners have been visited using booleans for each corner
+        visitedCorners = (False, False, False, False)
+        self.startState = (self.startingPosition, visitedCorners)
 
     def getStartState(self):
         """
@@ -299,14 +306,16 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startState
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Is a goal if all corners have been visited
+        _, visitedCorners = state
+        return all(visitedCorners)
 
     def getSuccessors(self, state: Any):
         """
@@ -329,6 +338,18 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            (x, y), visitedCorners = state # State is (currPosition, visitedCorners)
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            if not self.walls[nextx][nexty]:
+                nextPosition = (nextx, nexty)
+                newCorners = list(visitedCorners) # Turn to a list because tuples are immutable
+                if nextPosition in self.corners:
+                    cornerIndex = self.corners.index(nextPosition)
+                    newCorners[cornerIndex] = True
+                newCorners = tuple(newCorners)
+                successors.append(((nextPosition, newCorners), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
