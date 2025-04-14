@@ -285,7 +285,7 @@ class CornersProblem(search.SearchProblem):
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
 
-        # Corners
+        # Get coordinates of the 4 corners (given)
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1,1), (1,top), (right, 1), (right, top))
 
@@ -297,7 +297,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        # Indicates which corners have been visited using booleans for each corner
+        # Indicates which corners have been visited using booleans for each corner. This is the start state
         visitedCorners = (False, False, False, False)
         self.startState = (self.startingPosition, visitedCorners)
 
@@ -314,7 +314,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        # Is a goal if all corners have been visited
+        # Is a goal if all 4 corners have been visited
         _, visitedCorners = state
         return all(visitedCorners)
 
@@ -340,15 +340,19 @@ class CornersProblem(search.SearchProblem):
 
             "*** YOUR CODE HERE ***"
             (x, y), visitedCorners = state # State is (currPosition, visitedCorners)
+            # For each direction, check if it is legal by checking if it is a wall
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
 
             if not self.walls[nextx][nexty]:
                 nextPosition = (nextx, nexty)
-                newCorners = list(visitedCorners) # Turn to a list because tuples are immutable
+                # Turn to a list to update because tuples are immutable
+                newCorners = list(visitedCorners) 
                 if nextPosition in self.corners:
+                    # Get index of corner if it is a corner
                     cornerIndex = self.corners.index(nextPosition)
                     newCorners[cornerIndex] = True
+
                 newCorners = tuple(newCorners)
                 successors.append(((nextPosition, newCorners), action, 1))
 
@@ -388,16 +392,19 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     "*** YOUR CODE HERE ***"
     (x, y), visitedCorners = state
 
+    # We find which corners have not been visited yet
     unvisitedCorners = []
     for i, corner in enumerate(corners):
         if not visitedCorners[i]:
             unvisitedCorners.append(corner)
 
-    # If all corners are visited, this is a goal state
+    # If all corners are visited, this is a goal state, return 0
     if not unvisitedCorners:
         return 0
     
+    # Get the manhattan distance from the current position to each unvisited corner
     distances = [manhattanDistance((x, y), corner) for corner in unvisitedCorners]
+    # The heuristic is the max distance to any unvisited corner
     # For multiple unvisited corners, we return the max distance to one because the path cannot be shorter than the distance to the furthest unvisited corner.
     return max(distances)
 
@@ -539,6 +546,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        # Finds path to closest dot using BFS
         return search.bfs(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -575,6 +583,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
+        # Is a goal if there is food at this location
         return self.food[x][y]
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:

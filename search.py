@@ -89,25 +89,35 @@ def depthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     from util import Stack
 
+    # The frontier is implemented as a stack for DFS (LIFO)
     frontier = Stack()
+    # The visited set is implemented as a set to make sure we don't visit the same state twice (unique entries)
     visited = set()
 
     startState = problem.getStartState()
-    frontier.push((startState, [])) # Push to stack a tuple of (state, path_to_get_there)
+    # Push to stack a tuple of (state, pathToGetThere)
+    frontier.push((startState, []))
 
     while not frontier.isEmpty():
+        # Pop last inserted state-path tuple
         currState, currPath = frontier.pop()
 
+        # If current state is the goal state, return the path
         if problem.isGoalState(currState):
             return currPath
         
+        # If state has not been visited, expand it
         if currState not in visited:
             visited.add(currState)
+            # Loop through all successors of current state
             for successor, action, stepCost in problem.getSuccessors(currState):
+                # But only consider those that are not yet visited
                 if successor not in visited:
+                    # Append action to path to reach this successor
                     newPath = currPath + [action]
                     frontier.push((successor, newPath))
             
+    # Return an empty list (no actions) if no solution is found
     return []
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -115,13 +125,15 @@ def breadthFirstSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     from util import Queue
 
+    # The frontier is now implemented as a queue for BFS (FIFO)
     frontier = Queue()
     visited = set()
 
     startState = problem.getStartState()
-    frontier.push((startState, [])) # (state, path_to_get_there)
+    frontier.push((startState, [])) # (state, pathToGetThere)
 
     while not frontier.isEmpty():
+        # Pop the earliest-inserted tuple
         currState, currPath = frontier.pop()
 
         if problem.isGoalState(currState):
@@ -142,11 +154,13 @@ def uniformCostSearch(problem: SearchProblem):
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
 
+    # The frontier is now implemented as a priority queue where lowest total cost nodes are expanded first
     frontier = PriorityQueue()
-    visited = {} # Dictionary {state: best_cost_so_far}
+    # visited is now a dictionary that maps states to their lowest/best known cost to reach them so far
+    visited = {}
 
     startState = problem.getStartState()
-    frontier.push((startState, []), 0) # ((state, path_to_get_there), cumulativeCost)
+    frontier.push((startState, []), 0) # ((state, pathToGetThere), cumulativeCost)
 
     while not frontier.isEmpty():
         currState, currPath = frontier.pop() # PriorityQueue pop() only returns tuple "item"
@@ -154,7 +168,9 @@ def uniformCostSearch(problem: SearchProblem):
         if problem.isGoalState(currState):
             return currPath
         
+        # Get the cumulative cost needed to reach the current state
         costSoFar = problem.getCostOfActions(currPath)
+        # Expand the state if it has not been visited or if it has a lower cost than the previous path to this state
         if currState not in visited or costSoFar < visited[currState]:
             visited[currState] = costSoFar
 
@@ -178,12 +194,14 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
 
+    # Also uses a priority queue but is now ordered by pathCost + heuristic
     frontier = PriorityQueue()
     visited = {} 
 
     startState = problem.getStartState()
+    # The priority = pathCost + heuristic
     startCost = 0 + heuristic(startState, problem)
-    frontier.push((startState, []), startCost) # ((state, path_to_get_there), cumulativeCost + heuristic)
+    frontier.push((startState, []), startCost) # ((state, PathToGetThere), cumulativeCost + heuristic)
 
     while not frontier.isEmpty():
         currState, currPath = frontier.pop()
