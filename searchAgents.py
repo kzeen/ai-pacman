@@ -42,6 +42,7 @@ import util
 import time
 import search
 import pacman
+from util import manhattanDistance
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -385,7 +386,20 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    (x, y), visitedCorners = state
+
+    unvisitedCorners = []
+    for i, corner in enumerate(corners):
+        if not visitedCorners[i]:
+            unvisitedCorners.append(corner)
+
+    # If all corners are visited, this is a goal state
+    if not unvisitedCorners:
+        return 0
+    
+    distances = [manhattanDistance((x, y), corner) for corner in unvisitedCorners]
+    # For multiple unvisited corners, we return the max distance to one because the path cannot be shorter than the distance to the furthest unvisited corner.
+    return max(distances)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
