@@ -135,9 +135,6 @@ def breadthFirstSearch(problem: SearchProblem):
     while not frontier.isEmpty():
         # Pop the earliest-inserted tuple
         currState, currPath = frontier.pop()
-
-        if problem.isGoalState(currState):
-            return currPath
         
         if currState not in visited:
             visited.add(currState)
@@ -145,6 +142,9 @@ def breadthFirstSearch(problem: SearchProblem):
             for successor, action, stepCost in problem.getSuccessors(currState):
                 if successor not in visited:
                     newPath = currPath + [action]
+                    # Early goal checking
+                    if problem.isGoalState(successor):
+                        return newPath
                     frontier.push((successor, newPath))
 
     return []
